@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  database:
+    image: arm32v7/postgres:latest
+    ports:
+      - 8005:8042
+    restart: always
+    environment:
+      - POSTGRES_USER=pi
+      - POSTGRES_PASSWORD=lolipoplove
+      - POSTGRES_DB=sreality
+      
+  scrapy:
+    build: ./srealityscraper
+    volumes:
+      - ./srealityscraper:/usr/src/sreality
+    ports:
+      - 8000:5000
+    depends_on:
+      - database
+
+  server:
+    build: ./server
+    volumes:
+      - ./website:/var/www/html
+    ports:
+      - 8080:8080
+    depends_on:
+      - scrapy
